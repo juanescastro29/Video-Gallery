@@ -27,7 +27,8 @@ public class UserControl {
     @PostMapping("/registerUser")
     public String registerUser(@RequestBody User user) throws MessagingException, UnsupportedEncodingException {
         for (int i = 0; i < userService.getUsers().size(); i++) {
-            if (user.getUserEmail().equals(userService.getUsers().get(i))) {
+            if (user.getUserEmail().equals(userService.getUsers().get(i).getUserEmail())) {
+                System.out.print(userService.getUsers().size());
                 return "Email already registered";
             }
         }
@@ -42,30 +43,53 @@ public class UserControl {
     public String loginUser(@RequestBody Map<String, String> userCredentials) {
         String userEmail = userCredentials.get("userEmail");
         String userPassword = userCredentials.get("userPassword");
+        User user = new User();
         int position = 0;
         for (int i = 0; i < userService.getUsers().size(); i++){
-            if ((userEmail.equals(userService.getUsers().get(i)))
-                    && (userPassword == userService.getUsers().get(i).getUserPassword())
-                    && (userService.getUsers().get(i).isVerified() == true)){
-                return "User registered and verified";
-            } else if ((userEmail.equals(userService.getUsers().get(i)))
-                    && (userPassword == userService.getUsers().get(i).getUserPassword())
-                    && (userService.getUsers().get(i).isVerified() == false)) {
-                return "User registered but not verified";
+            if (userEmail.equals(userService.getUsers().get(i).getUserEmail())) {
+                if (userPassword.equals(userService.getUsers().get(i).getUserPassword())){
+                    position = i;
+                    i = userService.getUsers().size();
+                }else {
+                    return "Password";
+                }
+            }else {
+                return "Not registered";
             }
         }
-        return "User not registered";
+        user = userService.getUsers().get(position);
+        return user.getUserEmail();
     }
 
-    @GetMapping("/getUser/{user_email}")
-    public User getUser(@PathVariable String userEmail) {
+    @GetMapping("/{user_email}")
+    public User getUser(@PathVariable String user_email) {
         User user = new User();
-        for (int i = 0; i < userService.getUsers().size(); i++) {
-            if (userEmail.equals(userService.getUsers().get(i))){
-                user = userService.getUsers().get(i);
+        int position = 0;
+        for (int i = 0; i < userService.getUsers().size(); i++){
+            if (user_email.equals(userService.getUsers().get(i).getUserEmail())){
+                position = i;
+                i = userService.getUsers().size();
             }
         }
+        user = userService.getUsers().get(position);
         return user;
+    }
+
+    @PutMapping("/verifyUser/{user_id}")
+    public ResponseEntity<String> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer user_id) {
+        try {
+            String codeUser = verificationCode.get("verificationCode");
+            User userFound = userService.getUser(user_id);
+            if (userFound.getVerificationCode().equals(codeUser)){
+                userFound.setVerified(true);
+                userService.saveUser(userFound);
+                return new ResponseEntity<>("User verified", HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>("Verification code incorrect", HttpStatus.BAD_REQUEST);
+            }
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("Not user found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/updateProfile/{user_id}")
