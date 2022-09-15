@@ -18,8 +18,8 @@ public class SenMailServiceImplementation implements SendMailService{
 
     @Override
     public void senEmail(String toEmail, String verificationCode) throws MessagingException, UnsupportedEncodingException {
-        String mailBody = "<h3>Hello, your verification code its the follows:<h3/><br><h2>"
-                + verificationCode + "<h2/><br><p>Thank you<p/><p>The Video Gallery Team<p/>";
+        String mailBody = "<h3>Hello, your verification code its the follows:</h3><br><h2>"
+                + verificationCode + "</h2><br><p>Thank you,</p><p>The Video Gallery Team</p>";
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         helper.setFrom("juanescastro29@gmail.com", "Video Gallery APP");

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -39,26 +37,39 @@ public class UserControl {
         return "User registered";
     }
 
-    @GetMapping("/login")
-    public String loginUser(@RequestBody Map<String, String> userCredentials) {
+    @PostMapping("/login")
+    public ResponseEntity<Object> loginUser(@RequestBody Map<String, String> userCredentials) {
         String userEmail = userCredentials.get("userEmail");
         String userPassword = userCredentials.get("userPassword");
         User user = new User();
+        Map<String, Object> response = new HashMap<>();
         int position = 0;
+
         for (int i = 0; i < userService.getUsers().size(); i++){
-            if (userEmail.equals(userService.getUsers().get(i).getUserEmail())) {
-                if (userPassword.equals(userService.getUsers().get(i).getUserPassword())){
-                    position = i;
-                    i = userService.getUsers().size();
-                }else {
-                    return "Password";
-                }
-            }else {
-                return "Not registered";
-            }
+           if (userEmail.equals(userService.getUsers().get(i).getUserEmail())){
+               if (userPassword.equals(userService.getUsers().get(i).getUserPassword())) {
+                   position = i;
+                   i = userService.getUsers().size();
+               }else {
+                   response.put("response", "Incorrect credentials");
+                   return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
+               }
+           }else {
+               response.put("response", "/register");
+               return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+           }
         }
         user = userService.getUsers().get(position);
-        return user.getUserEmail();
+
+        if (!user.isVerified()) {
+            response.put("route", "/verification");
+            response.put("userId", user.getUserId());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        response.put("route", "/");
+        response.put("user", user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{user_email}")
@@ -76,14 +87,17 @@ public class UserControl {
     }
 
     @PutMapping("/verifyUser/{user_id}")
-    public ResponseEntity<String> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer user_id) {
+    public ResponseEntity<Object> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer user_id) {
         try {
             String codeUser = verificationCode.get("verificationCode");
+            Map<String, Object> response = new HashMap<>();
             User userFound = userService.getUser(user_id);
             if (userFound.getVerificationCode().equals(codeUser)){
                 userFound.setVerified(true);
                 userService.saveUser(userFound);
-                return new ResponseEntity<>("User verified", HttpStatus.OK);
+                response.put("route", "/videos");
+                response.put("user", userFound);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>("Verification code incorrect", HttpStatus.BAD_REQUEST);
             }

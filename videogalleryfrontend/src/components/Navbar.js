@@ -1,12 +1,18 @@
-import React from "react";
-import { NavLink } from 'react-router-dom'
+import React, { useContext } from "react";
+import { NavLink } from "react-router-dom";
 import Logo from "../assets/logo.png";
+import { UserContext } from "../context/UserContext";
+import MenuNoSession from "./MenuNoSession";
+import MenuSession from "./MenuSession";
 
 const Navbar = () => {
+  
+  const { session } = useContext(UserContext);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark static-top">
       <div className="container">
-        <NavLink to="/" className="navbar-brand" >
+        <NavLink to="/" className="navbar-brand">
           <img src={Logo} alt="Video gallery logo" height="50" />
           Video Gallery
         </NavLink>
@@ -27,7 +33,11 @@ const Navbar = () => {
         >
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <NavLink to="/videos" className="nav-link active" aria-current="page" >
+              <NavLink
+                to="/videos"
+                className="nav-link active"
+                aria-current="page"
+              >
                 Videos
               </NavLink>
             </li>
@@ -46,25 +56,16 @@ const Navbar = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i className="bi bi-person-circle text-white" style={{ fontSize: 18 }} />
+                <i
+                  className="bi bi-person-circle text-white"
+                  style={{ fontSize: 18 }}
+                />
               </a>
               <ul
-                className="dropdown-menu dropdown-menu-end"
-                aria-labelledby="userOptions  "
+                className="dropdown-menu dropdown-menu-dark dropdown-menu-end" 
+                aria-labelledby="userOptions"
               >
-                <li>
-                  <NavLink to="/profile" className="dropdown-item">
-                    My profile
-                  </NavLink>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <NavLink to="/" className="dropdown-item">
-                    Log Out
-                  </NavLink>
-                </li>
+                {session ? <MenuSession /> : <MenuNoSession />}
               </ul>
             </li>
           </ul>
