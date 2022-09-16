@@ -4,7 +4,7 @@ import { UserContext } from "../context/UserContext";
 const Home = () => {
   const { user } = useContext(UserContext);
 
-  console.log(user);
+  console.log(user.userEmail);
 
   return (
     <div className="container-lg my-5 mb-5 p-4 align-items-center justify-content-center">

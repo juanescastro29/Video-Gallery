@@ -33,7 +33,7 @@ public class UserControl {
         String verificationCode = generateCode();
         user.setVerificationCode(verificationCode);
         userService.saveUser(user);
-        sendMailService.senEmail(user.getUserEmail(), verificationCode);
+        sendMailService.sendEmail(user.getUserEmail(), verificationCode);
         return "User registered";
     }
 
@@ -51,11 +51,11 @@ public class UserControl {
                    position = i;
                    i = userService.getUsers().size();
                }else {
-                   response.put("response", "Incorrect credentials");
+                   response.put("error", "Password incorrect");
                    return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
                }
            }else {
-               response.put("response", "/register");
+               response.put("route", "/register");
                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
            }
         }
@@ -86,6 +86,16 @@ public class UserControl {
         return user;
     }
 
+    @PostMapping("/verificationEmail/resend/{userId}")
+    public String resendEmail(@PathVariable Integer userId) throws MessagingException, UnsupportedEncodingException {
+        User user = userService.getUser(userId);
+        String verificationCode = generateCode();
+        user.setVerificationCode(verificationCode);
+        userService.saveUser(user);
+        sendMailService.sendEmail(user.getUserEmail(), verificationCode);
+        return  "Email send";
+    }
+
     @PutMapping("/verifyUser/{user_id}")
     public ResponseEntity<Object> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer user_id) {
         try {
@@ -99,17 +109,18 @@ public class UserControl {
                 response.put("user", userFound);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }else {
-                return new ResponseEntity<>("Verification code incorrect", HttpStatus.BAD_REQUEST);
+                response.put("error", "Verification code incorrect");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("Not user found", HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/updateProfile/{user_id}")
-    public ResponseEntity<String> updateProfile(@RequestBody User user, @PathVariable Integer user_id) {
+    @PutMapping("/updateProfile/{userId}")
+    public ResponseEntity<String> updateProfile(@RequestBody User user, @PathVariable Integer userId) {
         try {
-            User userFound = userService.getUser(user_id);
+            User userFound = userService.getUser(userId);
             for (int i = 0; i < userService.getUsers().size(); i++){
                 if (user.getUserEmail().equals(userService.getUsers().get(i))) {
                     return new ResponseEntity<>("Email already registered", HttpStatus.ALREADY_REPORTED);
@@ -125,12 +136,12 @@ public class UserControl {
         }
     }
 
-    @DeleteMapping("/deleteAccount/{user_id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable Integer user_id) {
+    @DeleteMapping("/deleteAccount/{userId}")
+    public ResponseEntity<String> deleteAccount(@PathVariable Integer userId) {
         try {
             int position = 0;
             for (int i = 0; i < userService.getUsers().size(); i++){
-                if (user_id == userService.getUsers().get(i).getUserId()){
+                if (userId == userService.getUsers().get(i).getUserId()){
                     position = i;
                     i = userService.getUsers().size();
                 }

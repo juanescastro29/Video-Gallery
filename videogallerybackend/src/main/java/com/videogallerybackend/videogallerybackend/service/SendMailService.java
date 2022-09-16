@@ -8,6 +8,6 @@ import java.io.UnsupportedEncodingException;
 
 public interface SendMailService {
 
-    public void senEmail(String toEmail, String verificationCode) throws MessagingException, UnsupportedEncodingException;
+    public void sendEmail(String toEmail, String verificationCode) throws MessagingException, UnsupportedEncodingException;
 
 }

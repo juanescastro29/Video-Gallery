@@ -17,10 +17,10 @@ const Login = () => {
   return (
     <div className="container-lg my-5 mb-5 p-4 align-items-center justify-content-center">
       <div className="row g-2 p-4 background rounded-4">
-        <div className="col-md-6 p-4">
+        <div className="col-md-7 p-4">
           <Carousel images={images} />
         </div>
-        <div className="col-md-6 p-4 d-flex align-items-center">
+        <div className="col-md-5 p-4 d-flex align-items-center">
           <Form />
         </div>
       </div>

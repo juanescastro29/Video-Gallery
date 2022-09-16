@@ -11,7 +11,8 @@ const MenuSession = () => {
   function logout () {
     window.localStorage.removeItem("session");
     setSession(false);
-    setUser(null);
+    window.localStorage.removeItem("user");
+    setUser({});
     navigate("/")
   }
 

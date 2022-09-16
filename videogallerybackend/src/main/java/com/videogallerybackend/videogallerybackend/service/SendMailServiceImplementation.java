@@ -11,13 +11,13 @@ import java.io.UnsupportedEncodingException;
 
 
 @Service
-public class SenMailServiceImplementation implements SendMailService{
+public class SendMailServiceImplementation implements SendMailService{
 
     @Autowired
     private JavaMailSender mailSender;
 
     @Override
-    public void senEmail(String toEmail, String verificationCode) throws MessagingException, UnsupportedEncodingException {
+    public void sendEmail(String toEmail, String verificationCode) throws MessagingException, UnsupportedEncodingException {
         String mailBody = "<h3>Hello, your verification code its the follows:</h3><br><h2>"
                 + verificationCode + "</h2><br><p>Thank you,</p><p>The Video Gallery Team</p>";
         MimeMessage message = mailSender.createMimeMessage();

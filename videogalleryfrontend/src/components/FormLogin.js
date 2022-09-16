@@ -33,25 +33,27 @@ const Form = () => {
       if (dataBackend.response !== "Incorrect credentials") {
         if (dataBackend.route !== "/verification") {
           if (dataBackend.route === "/") {
+            window.localStorage.setItem("user", JSON.stringify(dataBackend.user));
             setUser(dataBackend.user);
+            window.localStorage.setItem("session", true)
             setSession(true);
-            navigate("/");
+            navigate(dataBackend.route);
           }
         }else {
           setVerification(true);
-          navigate("/verification", {state: { userId: dataBackend.userId}})
+          navigate(dataBackend.route, {state: { userId: dataBackend.userId}})
         }
       }else {
-        setCredentialError("Password incorrect");
+        setCredentialError(dataBackend.error);
       }
     }else {
-      navigate("/register");
+      navigate(dataBackend.route);
     }
   }
 
   return (
     <form
-      className="row p-2"
+      className="row p-2 text-white"
       onSubmit={handleSubmit(login)}
     >
       <div className="col-12 p-2">
