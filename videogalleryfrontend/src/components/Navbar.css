@@ -1,3 +1,7 @@
 .dropdown-item:active {
   background-color: #6c757d !important;
 }
+
+.color-image {
+  filter: brightness(0) invert(1);
+}

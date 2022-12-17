@@ -23,43 +23,51 @@ public class UserControl {
     private SendMailService sendMailService;
 
     @PostMapping("/registerUser")
-    public String registerUser(@RequestBody User user) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> registerUser(@RequestBody User user) throws MessagingException, UnsupportedEncodingException {
+        Map<String, Object> response = new HashMap<>();
         for (int i = 0; i < userService.getUsers().size(); i++) {
             if (user.getUserEmail().equals(userService.getUsers().get(i).getUserEmail())) {
                 System.out.print(userService.getUsers().size());
-                return "Email already registered";
+                response.put("message", "Email already registered");
+                response.put("user", null);
+                return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
             }
         }
         String verificationCode = generateCode();
         user.setVerificationCode(verificationCode);
         userService.saveUser(user);
         sendMailService.sendEmail(user.getUserEmail(), verificationCode);
-        return "User registered";
+        response.put("message", "User registered");
+        response.put("userId", user.getUserId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@RequestBody Map<String, String> userCredentials) {
         String userEmail = userCredentials.get("userEmail");
         String userPassword = userCredentials.get("userPassword");
-        User user = new User();
+        User user = null;
         Map<String, Object> response = new HashMap<>();
-        int position = 0;
+        if (userService.getUsers().size() == 0) {
+            response.put("route", "/register");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
 
         for (int i = 0; i < userService.getUsers().size(); i++){
            if (userEmail.equals(userService.getUsers().get(i).getUserEmail())){
-               if (userPassword.equals(userService.getUsers().get(i).getUserPassword())) {
-                   position = i;
-                   i = userService.getUsers().size();
-               }else {
-                   response.put("error", "Password incorrect");
-                   return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
-               }
-           }else {
-               response.put("route", "/register");
-               return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+               user = userService.getUsers().get(i);
            }
         }
-        user = userService.getUsers().get(position);
+
+        if (user != null) {
+            if (!userPassword.equals(user.getUserPassword())) {
+                response.put("error", "Password incorrect");
+                return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
+            }
+        }else {
+            response.put("route", "/register");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
 
         if (!user.isVerified()) {
             response.put("route", "/verification");
@@ -96,12 +104,12 @@ public class UserControl {
         return  "Email send";
     }
 
-    @PutMapping("/verifyUser/{user_id}")
-    public ResponseEntity<Object> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer user_id) {
+    @PutMapping("/verifyUser/{userId}")
+    public ResponseEntity<Object> updateProfile(@RequestBody Map<String, String> verificationCode, @PathVariable Integer userId) {
         try {
             String codeUser = verificationCode.get("verificationCode");
             Map<String, Object> response = new HashMap<>();
-            User userFound = userService.getUser(user_id);
+            User userFound = userService.getUser(userId);
             if (userFound.getVerificationCode().equals(codeUser)){
                 userFound.setVerified(true);
                 userService.saveUser(userFound);

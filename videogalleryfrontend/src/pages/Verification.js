@@ -6,7 +6,7 @@ const Verification = () => {
   const location = useLocation();
   const userId = location.state.userId;
   const { setUser, setSession } = useContext(UserContext);
-  const [time, setTime] = useState(5);
+  const [time, setTime] = useState(40);
   const [responseBack, setResponseBack] = useState("");
   const navigate = useNavigate();
   const [code, setCode] = useState("");
@@ -14,6 +14,7 @@ const Verification = () => {
   var count;
   useEffect(() => {
     if (time > 0) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       count = setInterval(() => {
         setTime(time - 1);
       }, 1000);
@@ -57,54 +58,54 @@ const Verification = () => {
   }
 
   return (
-    <div className="container-lg my-5 mb-5 p-4">
-      <div className="row row g-1 p-4 border border-dark rounded">
-        <div className="col-12 text-center p-3">
-          <h3>
+    <div className="container-xl my-5 p-5">
+      <div className="row g-1 p-5">
+        <div className="col-12 text-center p-2">
+          <h3 className="text-white">
             Your user its not verified.
             <br /> Please check your email and copy the code for verified your
             account.
           </h3>
         </div>
-        <div className="col-12 p-2 text-center fs-5">
+        <div className="col-md-6 offset-md-3 p-2 text-center fs-5">
           <input
             type="text"
-            className="text-center m-2"
+            className="form-control text-center m-2"
             onChange={(e) => setCode(e.target.value)}
           ></input>
         </div>
-        <div className="col-12 text-center p-2">
+        <div className="container text-center p-3">
           {time === 0 ? (
             <button
+              className="btn btn-dark col-4 p-2"
               type="submit"
-              className="btn btn-primary m-2"
               onClick={() => resendCode()}
             >
               Resend code
             </button>
           ) : (
-            <button type="submit" className="btn btn-primary m-2 disabled">
+            <button className="btn btn-dark disabled p-2 col-4" type="submit">
               Resend code - {time}
             </button>
           )}
           <button
+            className="btn btn-dark col-4 p-2 ms-2"
             type="submit"
-            className="btn btn-primary m-2"
             onClick={() => validateCode()}
           >
             Validate code
           </button>
-          {responseBack === "Verification code incorrect" ? (
-            <div className="text-danger">
-              <small>{responseBack}</small>
-            </div>
-          ) : (
-            <div className="text-success">
-              <small>{responseBack}</small>
-            </div>
-          )}
         </div>
       </div>
+      {responseBack === "Verification code incorrect" ? (
+        <div className="text-danger text-center">
+          <h6>{responseBack}</h6>
+        </div>
+      ) : (
+        <div className="text-success text-center">
+          <h6>{responseBack}</h6>
+        </div>
+      )}
     </div>
   );
 };

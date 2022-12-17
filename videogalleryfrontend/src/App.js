@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
-import VerificationRoute from './components/VerificationRoute'
+import VerificationRoute from "./components/VerificationRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,11 +14,13 @@ import { VIDEOS, PROFILE, VERIFICATION } from "./routes/PrivatePaths";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import UserProvider from "./context/UserContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <UserProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

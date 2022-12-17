@@ -26,6 +26,7 @@ public class User {
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified;
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Video> videos;
 
     public User (){

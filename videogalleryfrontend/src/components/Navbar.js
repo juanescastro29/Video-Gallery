@@ -13,7 +13,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark static-top">
       <div className="container">
         <NavLink to="/" className="navbar-brand">
-          <img src={Logo} alt="Video gallery logo" height="50" />
+          <img className="color-image" src={Logo} alt="Video gallery logo" height="50" />
           Video Gallery
         </NavLink>
         <button
@@ -35,14 +35,14 @@ const Navbar = () => {
             <li className="nav-item">
               <NavLink
                 to="/videos"
-                className="nav-link active"
+                className="nav-link"
                 aria-current="page"
               >
                 Videos
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/about" className="nav-link text-white">
+              <NavLink to="/about" className="nav-link">
                 About
               </NavLink>
             </li>

@@ -15,7 +15,7 @@ const Carousel = ({ images }) => {
               src={src}
               className="d-block"
               alt="carrousel"
-              style={{width: "100%", height: "400px"}}
+              style={{width: "100%", height: "410px"}}
             />
           </div>
         ))}

@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 const Form = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [credentialError, setCredentialError] = useState("");
   const navigate = useNavigate();
   const {
@@ -16,10 +14,10 @@ const Form = () => {
 
   const { setUser, setSession, setVerification } = useContext(UserContext);
 
-  async function login() {
+  async function login(dataForm) {
     const data = {
-      userEmail: email,
-      userPassword: password,
+      userEmail: dataForm.userEmail,
+      userPassword: dataForm.userPassword,
     };
     const response = await fetch("http://localhost:8080/user/login", {
       method: "POST",
@@ -29,8 +27,8 @@ const Form = () => {
       body: JSON.stringify(data),
     });
     const dataBackend = await response.json();
-    if(dataBackend.response !== "/register") {
-      if (dataBackend.response !== "Incorrect credentials") {
+    if(dataBackend.route !== "/register") {
+      if (dataBackend.error !== "Password incorrect") {
         if (dataBackend.route !== "/verification") {
           if (dataBackend.route === "/") {
             window.localStorage.setItem("user", JSON.stringify(dataBackend.user));
@@ -59,13 +57,13 @@ const Form = () => {
       <div className="col-12 p-2">
         <h3 className="fw-bolder">Login</h3>
       </div>
-      <div className="col-10 p-2">
+      <div className="col-12 p-2">
         <label htmlFor="userEmail" className="form-label fw-bolder">
           Email:
         </label>
         <input
-          type="email"
-          className="form-control "
+          type="text"
+          className="form-control border-dark"
           name="userEmail"
           id="userEmail"
           placeholder="example@email.com"
@@ -74,11 +72,10 @@ const Form = () => {
             required: true,
             pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
           })}
-          onChange={(e) => setEmail(e.target.value)}
         />
         {errors.userEmail?.type === "pattern" && (
           <div className="text-danger">
-            <small>Ingrese una dirección de correo valida.</small>
+            <small>Format email not valid.</small>
           </div>
         )}
         {errors.userEmail?.type === "required" && (
@@ -87,20 +84,19 @@ const Form = () => {
           </div>
         )}
       </div>
-      <div className="col-10 p-2">
+      <div className="col-12 p-2">
         <label htmlFor="userPassword" className="form-label fw-bolder">
           Password:
         </label>
         <input
           type="password"
-          className="form-control "
+          className="form-control border-dark"
           name="userPassword"
           id="userPassword"
           autoComplete="nope"
           {...register("userPassword", { required: true })}
-          onChange={(e) => setPassword(e.target.value)}
         />
-        {errors.userPassword && (
+        {errors.userPassword?.type === "required" && (
           <div className="text-danger">
             <small>This field is required.</small>
           </div>
@@ -111,8 +107,8 @@ const Form = () => {
           <small>{credentialError}</small>
         </div>
       )}
-      <div className="col-12 p-2">
-        <button type="submit" className="btn btn-primary">
+      <div className="d-grid col-6 mx-auto p-2 my-2">
+        <button className="btn btn-dark" type="submit">
           Login
         </button>
       </div>

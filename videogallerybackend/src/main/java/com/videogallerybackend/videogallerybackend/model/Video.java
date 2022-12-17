@@ -8,12 +8,13 @@ public class Video {
 
     @Id
     @Column(name = "video_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int videoId;
     @Column(name = "yt_id")
     private String ytId;
     @Column(name = "video_tittle", nullable = false)
     private String videoTittle;
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "longtext")
     private String videoDescription;
     @Column(name = "video_min", nullable = false)
     private String videoMin;
